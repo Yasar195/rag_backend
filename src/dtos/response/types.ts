@@ -3,6 +3,9 @@ export interface ApiResponse<T> {
     statusCode: number;
     data: T;
     message: string;
-    error?: string;
+    error?: any;
 }
 
+export interface MessageResponse {
+    message: string;
+}

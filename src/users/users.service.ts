@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterUserDto, RegisterUserResponse } from '../dtos/users/types';
+import { RegisterUserDto, RegisterUserResponse, RegisterUserSchema } from '../dtos/users/types';
 import { ApiResponse } from '../dtos/response/types';
 import { db } from '..';
 import { usersTable } from '../db/schema';
@@ -7,9 +7,12 @@ import { usersTable } from '../db/schema';
 @Injectable()
 export class UsersService {
 
-    async registerUser(data: RegisterUserDto): Promise<ApiResponse<RegisterUserResponse>> {
+    async registerUser(dto: RegisterUserDto): Promise<ApiResponse<RegisterUserResponse>> {
         let response: ApiResponse<RegisterUserResponse>;
         try {
+
+            const data = RegisterUserSchema.parse(dto);
+
             const user: typeof usersTable.$inferInsert = {
                 id: data.id,
                 name: data.name,

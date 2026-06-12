@@ -4,9 +4,8 @@ let app: admin.app.App;
 
 export function initializeFirebase(): admin.app.App {
   if (!app) {
-    // Initialize Firebase Admin SDK
-    // Uses GOOGLE_APPLICATION_CREDENTIALS environment variable by default
     app = admin.initializeApp({
+      credential: admin.credential.cert('./serviceAccountKey.json'),
       projectId: process.env.FIREBASE_PROJECT_ID,
     });
   }
