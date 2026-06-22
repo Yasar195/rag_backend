@@ -24,6 +24,10 @@ export interface BotCreateDto {
     text: string;
 }
 
+export interface GetBotMemory {
+    memory: string[]
+}
+
 export interface MessageBot {
     message: string;
 }

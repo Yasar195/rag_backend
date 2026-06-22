@@ -17,7 +17,7 @@ export class PineconeService {
 
     public async createMemory(id: string, text: string) {
         const namespace = this.indexName.namespace(id);
-        await namespace.namespace(`bot-${123}`).upsertRecords({
+        await namespace.namespace(id).upsertRecords({
             records: [
                 {
                     id: `msg-${Date.now()}`,
@@ -29,7 +29,7 @@ export class PineconeService {
 
     public async queryMemory(id: string, query: string): Promise<String> {
         const results = await this.indexName.searchRecords({
-            namespace: `bot-123`,
+            namespace: id,
             query: {
                 inputs: {
                     text: query
@@ -49,6 +49,24 @@ export class PineconeService {
         .join('\n---\n') || '';
 
         return retrievedContext;
+    }
+
+    public async getMemory(id: string) {
+        const namespaceTarget = this.indexName.namespace(id);
+        
+        const listResponse = await namespaceTarget.listPaginated();
+        
+        // Extract the string IDs into an array
+        const recordIds = listResponse.vectors?.map(v => v.id) || [];
+
+        if (recordIds.length === 0) {
+            return []; // Namespace is empty
+        }
+
+        const fetchResponse = await namespaceTarget.fetch({ ids: recordIds });
+        
+        return fetchResponse.records;
+
     }
 
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BotCreateDto, BotResponse, CreateBotDto, GetBotDto, GetBotResponse, MessageBot } from '../dtos/bot/types';
+import { BotCreateDto, BotResponse, CreateBotDto, GetBotDto, GetBotMemory, GetBotResponse, MessageBot } from '../dtos/bot/types';
 import { BotCreateMessage, LoggedInUser } from '../dtos/users/types';
 import { ApiResponse, MessageResponse } from '../dtos/response/types';
 import { botTable } from '../db/schema';
@@ -178,6 +178,49 @@ export class BotService {
                 error: error.message,
             }
         }
+        return response;
+    }
+
+    async getMemoryOfBot(botId: string, userId: string): Promise<ApiResponse<GetBotMemory>> {
+        let response: ApiResponse<GetBotMemory>;
+        try {
+            const isOwner = await this.checkBotOwnership(botId, userId);
+            if(!isOwner) {
+                response = {
+                    success: false,
+                    statusCode: 403,
+                    data: null,
+                    message: 'You do not have permission to add memory to this bot',
+                    error: null
+                }
+
+                return response;
+            }
+
+            const records = await this.pineconeService.getMemory(botId);
+            const texts = Object.values(records)
+                .map(item => item.metadata?.text)
+                .filter(Boolean);
+
+            response = {
+                data: {
+                    memory: texts
+                },
+                message: "Bot memory fetched",
+                statusCode: 200,
+                success: true,
+                error: null
+            }
+        } catch(error) {
+            response = {
+                success: false,
+                statusCode: 500,
+                data: null,
+                message: 'Failed to fetch memory.',
+                error: error.message,
+            }
+        }
+
         return response;
     }
 

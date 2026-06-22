@@ -91,7 +91,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": "serverless-framework-deployments-ap-south-1-4f0c957c-077b",
-          "S3Key": "serverless/rag-backend/dev/1782060594279-2026-06-21T16:49:54.279Z/rag-backend.zip"
+          "S3Key": "serverless/rag-backend/dev/1782156128406-2026-06-22T19:22:08.406Z/rag-backend.zip"
         },
         "Handler": "dist/src/lambda.handler",
         "Runtime": "nodejs18.x",
@@ -109,14 +109,14 @@
         "MainLogGroup"
       ]
     },
-    "MainLambdaVersionflxfjZsyLDs7Ee9zONakw7FssPqIAdNlDiTepgvA0w": {
+    "MainLambdaVersionTUmd4qUxV6ZSGzinSlyHJ1OUBAxXwaGlweAhleyC1Tw": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "MainLambdaFunction"
         },
-        "CodeSha256": "AO/8fm+erCIlqZ9s7ghrK5VphFUd7yCxEMgkLUM99yE="
+        "CodeSha256": "XsGX3Mu8VRqx6w9sM8WiwrEByzrF6BHgfMXWh+9R6KQ="
       }
     },
     "HttpApi": {
@@ -246,7 +246,7 @@
     "MainLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "MainLambdaVersionflxfjZsyLDs7Ee9zONakw7FssPqIAdNlDiTepgvA0w"
+        "Ref": "MainLambdaVersionTUmd4qUxV6ZSGzinSlyHJ1OUBAxXwaGlweAhleyC1Tw"
       },
       "Export": {
         "Name": "sls-rag-backend-dev-MainLambdaFunctionQualifiedArn"

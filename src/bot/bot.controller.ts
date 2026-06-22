@@ -39,4 +39,11 @@ export class BotController {
         return res.status(response.statusCode).json(response);
     }
 
+    @UseGuards(FirebaseAuthGuard)
+    @Get(":id/memory/get")
+    async getMemory(@Param('id') id: string, @CurrentUser() user: LoggedInUser, @Res() res: Response) {
+        const response = await this.botService.getMemoryOfBot(id, user.uid)
+        return res.status(response.statusCode).json(response);
+    }
+
 }
