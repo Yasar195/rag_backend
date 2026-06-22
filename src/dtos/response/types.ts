@@ -9,3 +9,8 @@ export interface ApiResponse<T> {
 export interface MessageResponse {
     message: string;
 }
+
+export interface pagination {
+    page?: number,
+    limit?: number
+}
