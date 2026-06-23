@@ -139,14 +139,19 @@ export class BotService {
                 return response;
             }
 
+            const bot = await db.select({ systemPrompt: botTable.systemPrompt }).from(botTable).where(eq(botTable.id, botId)).limit(1);
+
 
             const results = await this.pineconeService.queryMemory(botId, data.message);
 
             const systemPrompt = `
-                You are an advanced AI assistant managing bot memory. 
-                Answer the user's question relying strictly on the following retrieved context memories.
-                If the answer cannot be found in the context, use your general knowledge but state that it wasn't explicitly found in memory.
-
+                ${bot[0].systemPrompt}
+                STRICT RESPONSE RULES:
+                - ONLY answer using the information provided in the "Retrieved Context Memories" section below.
+                - If the answer is NOT found in the retrieved context, respond with: "I don't have enough information to answer that."
+                - Do NOT make up, infer, or hallucinate any information beyond what is explicitly stated in the context.
+                - Do NOT use your general training knowledge to fill in gaps — stick strictly to the provided context.
+                - If the user's question is partially answered by the context, answer only the part that is supported and acknowledge the rest is unavailable.
                 Retrieved Context Memories:
                 ${results || 'No historical memories found for this specific query.'}
                 `.trim();
@@ -224,6 +229,49 @@ export class BotService {
         return response;
     }
 
+    async updateBot(data: CreateBotDto, user: LoggedInUser): Promise<ApiResponse<BotCreateMessage>>{
+        let response: ApiResponse<BotCreateMessage>;
+
+        try {
+
+            const isOwner = await this.checkBotOwnership(data.id, user.uid);
+            if(!isOwner) {
+                response = {
+                    success: false,
+                    statusCode: 403,
+                    data: null,
+                    message: 'You do not have permission to add memory to this bot',
+                    error: null
+                }
+
+                return response;
+            }
+
+            await db.update(botTable).set({ systemPrompt: data.systemPrompt, description: data.description, name: data.name }).where(eq(botTable.id, data.id)).returning();
+
+            response = {
+                data: {
+                    message: "Bot updated"
+                },
+                message: "Bot update success.",
+                statusCode: 200,
+                success: true,
+                error: null
+            }
+            
+        } catch(error) {
+            response = {
+                data: null,
+                message: "Bot update failed.",
+                statusCode: 500,
+                success: true,
+                error: error.message
+            }
+        }
+
+        return response;
+    }
+ 
     // private methods
     
     private async checkBotOwnership(botId: string, userId: string): Promise<boolean> {

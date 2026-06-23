@@ -2,6 +2,7 @@ import { botTable } from "../../db/schema";
 import { pagination } from "../response/types";
 
 export interface CreateBotDto {
+    id?:string;
     name: string;
     description?: string;
     systemPrompt?: string;

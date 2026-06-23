@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { FirebaseAuthGuard } from '../firebase/firebase-auth.guard';
 import { BotCreateDto, CreateBotDto, GetBotDto, MessageBot } from '../dtos/bot/types';
 import { CurrentUser } from '../firebase/current.user.decorator';
@@ -43,6 +43,13 @@ export class BotController {
     @Get(":id/memory/get")
     async getMemory(@Param('id') id: string, @CurrentUser() user: LoggedInUser, @Res() res: Response) {
         const response = await this.botService.getMemoryOfBot(id, user.uid)
+        return res.status(response.statusCode).json(response);
+    }
+
+    @UseGuards(FirebaseAuthGuard) 
+    @Patch("update")
+    async updateBot(@Body() body: CreateBotDto, @CurrentUser() user: LoggedInUser, @Res() res: Response) {
+        const response = await this.botService.updateBot(body, user);
         return res.status(response.statusCode).json(response);
     }
 
